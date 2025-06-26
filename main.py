@@ -71,16 +71,19 @@ def setup_ui():
     
     window.after(3000, creature_blink)
 
-    # methods for needs (prob move to creature.py)
+    # methods for needs (connected to buttons, so they stay here)
     def pet():
-        pet_label.config(text='The blob rumbles softly.')
+        message = test_creature.pet()
+        pet_label.config(text=message)
         window.after(3500, lambda: pet_label.config(text=''))
     
     def feed():
+        test_creature.feed()
         pet_label.config(text='The blob eats and looks happy.')
         window.after(3500, lambda: pet_label.config(text=''))
     
     def bathroom():
+        test_creature.go_to_bathroom()
         pet_label.config(text='The blob went for walkies.\nIt feels much better now (:')
         window.after(3500, lambda: pet_label.config(text=''))
     

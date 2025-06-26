@@ -9,41 +9,32 @@ provide methods like:
 """
 
 class Creature():
-    def __init__(self, name, hunger, thirst, bladder):
+    def __init__(self, name, hunger, bathroom):
         self.name = name
         self.hunger = hunger
-        self.thirst = thirst
-        self.bladder = bladder
+        self.bathroom = bathroom
     
     def update_needs(self):
         # increase hunger, thirst, etc. over time
         pass
 
     def feed(self):
-        # lower hunger stat
-        pass
-
-    # def give_water(self):
-        # lower thirst stat
-        # pass
+        self.hunger = max(0, self.hunger - 20)
 
     def go_to_bathroom(self):
-        # lower bladder stat
-        pass
+        self.bathroom = max(0, self.bathroom - 30)
 
+    # might increase happiness
     def pet(self):
-        # increase happiness
-        pass
+        return "The blob rumbles softly."
 
     def get_mood(self):
-        # returns mood description or emoji based on current stats
-        pass
+        # return "authentic" mood later
+        return '^^'
 
     def to_dict(self):
-        # convert to dict for saving
-        pass
+        return {'name': self.name, 'hunger': self.hunger, 'bathroom': self.bathroom}
 
-    # @classmethod
-    def from_dict(self):
-        # recreates a Creature object from saved data
-        pass
+    @classmethod
+    def from_dict(cls, data):
+        return cls(name = data['name'], hunger = data['hunger'], bathroom = data['bathroom'])
