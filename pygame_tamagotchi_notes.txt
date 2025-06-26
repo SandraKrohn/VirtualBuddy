@@ -1,0 +1,63 @@
+Pygame_tamagotchi
+
+- Main Components (Class-Level Overview):
+   Creature class
+   Holds the creature’s current state:
+   - name
+   - hunger, thirst, bladder, happiness
+   - Maybe a last_updated timestamp for save/load logic
+
+   Has methods to:
+   - Increase/decrease needs
+   - React to interactions (feed, water, pet, etc.)
+   - Check overall mood (happy/sad/grumpy)
+   - Serialize/deserialize state for saving/loading
+
+CreatureApp (Main Tkinter App class or function)
+  Sets up the UI:
+  - Labels for showing current stats
+  - Buttons for interactions: Feed, Water, Bathroom, Pet
+  - Optional: Name display
+
+  Contains the game loop via after()
+  - Every X milliseconds: update the creature’s state
+  - Refresh UI based on updated values
+  
+  Handles user input
+  - Button presses trigger methods on the Creature instance
+
+SaveManager (Optional but useful)
+  Handles saving/loading to a file (e.g., JSON)
+  - Save: dump creature’s data to a file
+  - Load: read file and recreate a Creature object
+  - Can be part of the Creature class or its own helper
+
+Flow of the App (Simplified Steps):
+  Launch the app
+  Check if a save file exists
+  - If yes: load the creature
+  - If no: prompt user to name the creature and create a new one
+
+  UI is displayed
+  - Shows creature’s name and mood
+  - Shows current needs: hunger, thirst, bladder, happiness
+  - Has buttons for interactions
+  - Game loop starts (via after() timer)
+
+  Every X seconds:
+  - Needs slowly increase (hunger, thirst, bladder)
+  - Happiness drops slightly if needs are too high
+  - UI updates accordingly (e.g., sad face, stat bars)
+
+  User interacts
+  - Clicks buttons to feed/water/pet/take to bathroom
+  - Creature reacts
+  - Stats are adjusted, and mood improves
+  
+  Exiting the game
+  - On quit, creature state is saved (ideally automatically)
+
+  Next time
+  - App loads saved state
+  - Optionally calculate how much time passed since last play to simulate "sleep"
+
