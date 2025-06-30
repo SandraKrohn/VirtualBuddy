@@ -15,7 +15,7 @@ starts the app, handles UI and game loop
  - trigger save on exit
  """
 
-test_creature = Creature('Harold', 100, 100, 100)
+test_creature = Creature('Harold', 100, 100)
 
 def setup_ui():
     # initialize Tkinter UI components (labels, buttons, etc.)
@@ -23,12 +23,12 @@ def setup_ui():
     # window:
     window = ttk.Window(themename='solar')
     window.title('My Virtual Buddy')
-    window.geometry('500x500')
+    window.geometry('500x600')
 
     # canvas:
     canvas = tk.Canvas(window, width=300, height=300)
     canvas.pack()
-    
+
     # creature
     og_coords = [100, 150, 120, 100, 160, 90, 200, 110, 220, 160, 200, 200, 140, 210, 100, 180]
     creature = canvas.create_polygon(
@@ -87,7 +87,6 @@ def setup_ui():
         pet_label.config(text='The blob went for walkies.\nIt feels much better now (:')
         window.after(3500, lambda: pet_label.config(text=''))
     
-
     # labels:
     pet_label = tk.Label(window, text='', font=('Courier', 12), height=2)
     pet_label.pack(pady=5)
@@ -103,9 +102,9 @@ def setup_ui():
     button_frame.pack(pady=10)
 
     # buttons
-    button_pet = ttk.Button(button_frame, text='pet', command=pet)
+    button_pet = ttk.Button(button_frame, text='pet', command=pet, style='success.TButton')
     button_pet.pack(side='left', padx=10, pady=5)
-    button_pet.configure(compound='center', anchor='center')
+    button_pet.configure(compound='center')
 
     button_feed = ttk.Button(button_frame, text='feed', command=feed)
     button_feed.pack(side='left', padx=10)
