@@ -19,27 +19,38 @@ test_creature = Creature('Harold', 100, 100)
 
 def setup_ui():
     # initialize Tkinter UI components (labels, buttons, etc.)
-    # okay, I'm starting...
+    
     # window:
     window = ttk.Window(themename='solar')
+
+    # main layout split
+    main_frame = ttk.Frame(window)
+    main_frame.pack(fill='both', expand=True)
+
+    # left: status bar frame
+    status_frame = ttk.Frame(main_frame)
+    status_frame.grid(row=0, column=0, sticky='n', padx=10, pady=10)
+
+    # right: canvas, messages, buttons
+    right_frame = ttk.Frame(main_frame)
+    right_frame.grid(row=0, column=1, sticky='n', padx=10, pady=10)
+
     window.title('My Virtual Buddy')
-    window.geometry('500x600')
+    window.geometry('800x800')
 
     # canvas:
-    canvas = tk.Canvas(window, width=300, height=300)
-    canvas.pack()
+    canvas = tk.Canvas(right_frame, width=400, height=400)
+    canvas.grid(row=0, column=0, pady=(10, 0))
 
     # creature
     og_coords = [100, 150, 120, 100, 160, 90, 200, 110, 220, 160, 200, 200, 140, 210, 100, 180]
-    creature = canvas.create_polygon(
-    og_coords,
-    fill="lime", outline="black", smooth=True)
+    creature = canvas.create_polygon(og_coords, fill="lime", outline="black", smooth=True)
     eye_left = canvas.create_oval(125, 130, 135, 140, fill='black')
     eye_right = canvas.create_oval(165, 130, 175, 140, fill='black')
     eyes = (eye_left, eye_right)
 
     # virtual buddy methods
-    # for animation
+    # animation
     tick = [0]
 
     def creature_breathe():
@@ -71,45 +82,58 @@ def setup_ui():
     
     window.after(3000, creature_blink)
 
+    # message label:
+    message_label = tk.Label(right_frame, text='', font=('Courier', 12), height=2)
+    message_label.grid(row=1, column=0, pady=10)
+
+    # preventing "needs update" text from disappearing early when button mashing
+    message_timer_id = None
+
+    def show_message(text):
+        nonlocal message_timer_id
+        if message_timer_id is not None:
+            window.after_cancel(message_timer_id)
+        message_label.config(text=text)
+        message_timer_id = window.after(4000, lambda: message_label.config(text=''))
+
     # methods for needs (connected to buttons, so they stay here)
     def pet():
-        message = test_creature.pet()
-        pet_label.config(text=message)
-        window.after(3500, lambda: pet_label.config(text=''))
+        test_creature.pet()
+        show_message('The blob rumbles softly.')
     
     def feed():
         test_creature.feed()
-        pet_label.config(text='The blob eats and looks happy.')
-        window.after(3500, lambda: pet_label.config(text=''))
+        show_message('The blob eats and looks happy.')
     
     def bathroom():
         test_creature.go_to_bathroom()
-        pet_label.config(text='The blob went for walkies.\nIt feels much better now (:')
-        window.after(3500, lambda: pet_label.config(text=''))
+        show_message('The blob went for walkies.\nIt feels much better now (:')
+
+    # status
+    mood_label = tk.Label(status_frame, text='mood', font=('Courier', 12), height=2)
+    mood_label.pack(padx=15, pady=5, anchor='w')
+    hunger_label = tk.Label(status_frame, text='hunger', font=('Courier', 12), height=2)
+    hunger_label.pack(padx=15, pady=5, anchor='w')
+    bathroom_label = tk.Label(status_frame, text='bathroom', font=('Courier', 12), height=2)
+    bathroom_label.pack(padx=15, pady=5, anchor='w')
     
-    # labels:
-    pet_label = tk.Label(window, text='', font=('Courier', 12), height=2)
-    pet_label.pack(pady=5)
-
-    feed_label = tk.Label(window, text='', font=('Courier', 12), height=2)
-    feed_label.pack(pady=5)
-
-    bathroom_label = tk.Label(window, text='', font=('Courier', 12), height=2)
-    bathroom_label.pack(pady=5)
-
     # horizontal button container
-    button_frame = ttk.Frame(window)
-    button_frame.pack(pady=10)
+    button_frame = ttk.Frame(right_frame)
+    button_frame.grid(row=2, column=0, pady=10)
 
-    # buttons
-    button_pet = ttk.Button(button_frame, text='pet', command=pet, style='success.TButton')
+    # buttons + giving them all the same size
+    max_chars = max(len('pet'), len('feed'), len('bathroom'))
+
+    button_pet = ttk.Button(button_frame, text='pet', command=pet)
+    button_pet.configure(width=max_chars)
     button_pet.pack(side='left', padx=10, pady=5)
-    button_pet.configure(compound='center')
 
     button_feed = ttk.Button(button_frame, text='feed', command=feed)
+    button_feed.configure(width=max_chars)
     button_feed.pack(side='left', padx=10)
 
     button_bathroom = ttk.Button(button_frame, text='bathroom', command=bathroom)
+    button_bathroom.configure(width=max_chars)
     button_bathroom.pack(side='left', padx=10)
 
     return window
