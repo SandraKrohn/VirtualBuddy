@@ -43,10 +43,11 @@ def setup_ui():
     canvas.grid(row=0, column=0, pady=(10, 0))
 
     # creature
-    og_coords = [100, 150, 120, 100, 160, 90, 200, 110, 220, 160, 200, 200, 140, 210, 100, 180]
+    x_offset = 100
+    og_coords = [x + x_offset if i % 2 == 0 else x for i, x in enumerate([100, 150, 120, 100, 160, 90, 200, 110, 220, 160, 200, 200, 140, 210, 100, 180])]
     creature = canvas.create_polygon(og_coords, fill="lime", outline="black", smooth=True)
-    eye_left = canvas.create_oval(125, 130, 135, 140, fill='black')
-    eye_right = canvas.create_oval(165, 130, 175, 140, fill='black')
+    eye_left = canvas.create_oval(125 + x_offset, 130, 135 + x_offset, 140, fill='black')
+    eye_right = canvas.create_oval(165 + x_offset, 130, 175 + x_offset, 140, fill='black')
     eyes = (eye_left, eye_right)
 
     # virtual buddy methods
@@ -117,9 +118,12 @@ def setup_ui():
     bathroom_label = tk.Label(status_frame, text='bathroom', font=('Courier', 12), height=2)
     bathroom_label.pack(padx=15, pady=5, anchor='w')
     
+    spacer = ttk.Frame(right_frame, height=100)
+    spacer.grid(row=2, column=0)
+
     # horizontal button container
     button_frame = ttk.Frame(right_frame)
-    button_frame.grid(row=2, column=0, pady=10)
+    button_frame.grid(row=3, column=0, pady=10)
 
     # buttons + giving them all the same size
     max_chars = max(len('pet'), len('feed'), len('bathroom'))
