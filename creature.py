@@ -1,3 +1,5 @@
+from config import HUNGER_RATE, BLADDER_RATE, MAX_HUNGER, MAX_BLADDER, MAX_HAPPINESS
+
 """
 define all stats
 track mood based on thresholds
@@ -15,8 +17,16 @@ class Creature():
         self.bathroom = bathroom
     
     def update_needs(self):
-        # increase hunger, thirst, etc. over time
-        pass
+        # increase needs over time
+        self.hunger = min(MAX_HUNGER, self.hunger + HUNGER_RATE)
+        self.bathroom = min(MAX_BLADDER, self.bathroom + BLADDER_RATE)
+    
+    def get_mood_value(self):
+        # the lower the needs, the better the mood
+        penalties = self.hunger * 0.7 + self.bathroom * 0.7
+        mood_value = MAX_HAPPINESS - penalties
+        return max(0, min(MAX_HAPPINESS, int(mood_value)))
+
 
     def feed(self):
         self.hunger = max(0, self.hunger - 20)
@@ -25,10 +35,12 @@ class Creature():
         self.bathroom = max(0, self.bathroom - 30)
 
     # might increase happiness
+    # wait, is that necessary?
     def pet(self):
         return "The blob rumbles softly."
 
-    def get_mood(self):
+    # and is this necessary?
+    def get_mood_string(self):
         # return "authentic" mood later
         return '^^'
 

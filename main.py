@@ -15,7 +15,7 @@ starts the app, handles UI and game loop
  - trigger save on exit
  """
 
-test_creature = Creature('Harold', 100, 100)
+test_creature = Creature('Harold', 0, 0)
 
 def setup_ui():
     # initialize Tkinter UI components (labels, buttons, etc.)
@@ -100,24 +100,29 @@ def setup_ui():
     # methods for needs (connected to buttons, so they stay here)
     def pet():
         test_creature.pet()
-        show_message('The blob rumbles softly.')
+        show_message(f'{test_creature.name} rumbles softly.')
     
     def feed():
         test_creature.feed()
-        show_message('The blob eats and looks happy.')
+        show_message(f'{test_creature.name} eats and looks happy.')
     
     def bathroom():
         test_creature.go_to_bathroom()
-        show_message('The blob went for walkies.\nIt feels much better now (:')
+        show_message(f'{test_creature.name} went for walkies.\nIt feels much better now (:')
 
     # status
-    mood_label = tk.Label(status_frame, text='mood', font=('Courier', 12), height=2)
-    mood_label.pack(padx=15, pady=5, anchor='w')
-    hunger_label = tk.Label(status_frame, text='hunger', font=('Courier', 12), height=2)
-    hunger_label.pack(padx=15, pady=5, anchor='w')
-    bathroom_label = tk.Label(status_frame, text='bathroom', font=('Courier', 12), height=2)
-    bathroom_label.pack(padx=15, pady=5, anchor='w')
-    
+    ttk.Label(status_frame, text='Mood:', font=('Courier', 12)).pack(anchor='w')
+    mood_bar = ttk.Progressbar(status_frame, maximum=100, length=200)
+    mood_bar.pack(anchor='w', pady=(0, 10))
+
+    ttk.Label(status_frame, text='Hunger:', font=('Courier', 12)).pack(anchor='w')
+    hunger_bar = ttk.Progressbar(status_frame, maximum=100, length=200)
+    hunger_bar.pack(anchor='w', pady=(0, 10))
+
+    ttk.Label(status_frame, text='Bathroom:', font=('Courier', 12)).pack(anchor='w')
+    bathroom_bar = ttk.Progressbar(status_frame, maximum=100, length=200)
+    bathroom_bar.pack(anchor='w', pady=(0, 10))
+
     spacer = ttk.Frame(right_frame, height=100)
     spacer.grid(row=2, column=0)
 
@@ -140,26 +145,38 @@ def setup_ui():
     button_bathroom.configure(width=max_chars)
     button_bathroom.pack(side='left', padx=10)
 
-    return window
+    return window, hunger_bar, bathroom_bar, mood_bar
 
-def update_game_loop():
-    # periodic update: advance creature state and refresh UI
-    pass
-
+# I've already taken care of this tho?
 def handle_user_action():
     # respond to user input (button press)
     pass
 
 def on_exit():
     # handle cleanup and saving before exit
-    pass
+    hunger_bar['value'] = max(0, MAX_HUNGER - test_creature.hunger)
+    bathroom_bar['value'] = max(0, MAX_BLADDER - test_creature.bathroom)
+
+    # Calculate mood based on needs
+    mood_bar['value'] = max(0, test_creature.get_mood_value())
 
 def main():
     # main entry point: laod creature, start UI loop
-    window = setup_ui()
+    global hunger_bar, bathroom_bar, mood_bar
+    window, hunger_bar, bathroom_bar, mood_bar = setup_ui()
     window.after(UPDATE_INTERVAL, update_game_loop)
-    # this is for later when saving is a thing: window.protocol('WM_DELETE_WINDOW', on_exit)
     window.mainloop()
+
+def update_game_loop():
+    test_creature.update_needs()
+
+    # update progress bars
+    hunger_bar['value'] = 100 - test_creature.hunger
+    bathroom_bar['value'] = 100 - test_creature.bathroom
+    mood_bar['value'] = max(0, test_creature.get_mood_value())
+
+    # continue the loop
+    hunger_bar.after(UPDATE_INTERVAL, update_game_loop)
 
 if __name__ == '__main__':
     main()
