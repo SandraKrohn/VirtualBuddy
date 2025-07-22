@@ -1,17 +1,33 @@
 import json
+import os
+from config import SAVE_FILE
+from creature import Creature
 
-"""
-handles saving and loading creature state:
-- check for save file on startup
-- load JSON into a dict and pas it to Creature.from_dict()
-- write Creature.to_dict() to JSON when saving
-- optionally store last_played timestamp to simulate time passing while app is closed (suggested by ChatGPT, but I don't think I like that, lol)
-"""
+def save_creature(creature):
+    try:
+        with open(SAVE_FILE, 'w') as file:
+            json.dump(creature.to_dict(), file)
+        print(f'Saved creature: {creature.name}')
+    except Exception as e:
+        print(f'Error saving creature: {e}')
 
-def load_creature(filepath):
-    # load creature data from file, returns a Creature instance or None
-    pass
 
-def save_creature(creature, filepath):
-    # save creature data to file
-    pass
+def load_creature():
+    try:
+        with open(SAVE_FILE, 'r') as f:
+            content = f.read().strip()
+            if not content:
+                os.remove(SAVE_FILE)
+                raise ValueError("Save file was empty and has been deleted.")
+            data = json.loads(content)
+        print("Loaded creature data.")
+        return Creature.from_dict(data)
+    
+    except (FileNotFoundError, ValueError) as e:
+        print(f"No valid save file found: {e}")
+        return None
+    
+    except Exception as e:
+        print(f"Error loading creature: {e}")
+        return None
+

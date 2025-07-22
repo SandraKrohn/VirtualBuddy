@@ -1,27 +1,28 @@
 import math
 import tkinter as tk
 import ttkbootstrap as ttk
+import sys
+import os
 from creature import Creature
 # from save_manager import load_creature, save_creature
 from config import *
+from save_manager import load_creature, save_creature
 
-"""
-starts the app, handles UI and game loop
- - launch Tkinter window
- - create or load a Creature instance
- - build and update GUI
- - set up the game loop using after()
- - connect buttons to creature actions
- - trigger save on exit
- """
+test_creature = None
 
-test_creature = Creature('Harold', 0, 0)
-
+def restart(window):
+    print("Restarting application...")
+    window.destroy()  # close the current window
+    python = sys.executable
+    os.execl(python, python, *sys.argv)  # re-launch the script with same args
+    
 def setup_ui():
     # initialize Tkinter UI components (labels, buttons, etc.)
-    
     # window:
     window = ttk.Window(themename='solar')
+    window.protocol('WM_DELETE_WINDOW', lambda: (on_exit(), window.destroy()))
+
+    window.bind('<r>', lambda event: restart(window))
 
     # main layout split
     main_frame = ttk.Frame(window)
@@ -100,6 +101,7 @@ def setup_ui():
     # methods for needs (connected to buttons, so they stay here)
     def pet():
         test_creature.pet()
+        mood_bar['value'] = test_creature.happiness
         show_message(f'{test_creature.name} rumbles softly.')
     
     def feed():
@@ -108,7 +110,7 @@ def setup_ui():
     
     def bathroom():
         test_creature.go_to_bathroom()
-        show_message(f'{test_creature.name} went for walkies.\nIt feels much better now (:')
+        show_message(f'{test_creature.name} went for walkies.\nThey feel much better now (:')
 
     # status
     ttk.Label(status_frame, text='Mood:', font=('Courier', 12)).pack(anchor='w')
@@ -153,16 +155,51 @@ def handle_user_action():
     pass
 
 def on_exit():
+    save_creature(test_creature)
     # handle cleanup and saving before exit
     hunger_bar['value'] = max(0, MAX_HUNGER - test_creature.hunger)
     bathroom_bar['value'] = max(0, MAX_BLADDER - test_creature.bathroom)
-
     # Calculate mood based on needs
     mood_bar['value'] = max(0, test_creature.get_mood_value())
 
+def get_user_name():
+    def submit():
+        name = entry.get().strip()
+        if not name:
+            name_var.set('Buddy')
+        else:
+            name_var.set(name)
+        prompt.destroy()
+
+    prompt = tk.Tk()
+    name_var = tk.StringVar()
+    prompt.title('Name your creature.')
+    prompt.geometry('300x150')
+
+    label = tk.Label(prompt, text='Enter your creature\'s name: ')
+    label.pack(pady=10)
+
+    entry = tk.Entry(prompt)
+    entry.pack()
+    entry.focus()
+    entry.bind('<Return>', lambda event: submit())
+
+    submit_button = tk.Button(prompt, text='Start', command=submit)
+    submit_button.pack()
+
+    prompt.mainloop()
+    return name_var.get()
+
 def main():
-    # main entry point: laod creature, start UI loop
     global hunger_bar, bathroom_bar, mood_bar
+    # name = get_user_name()
+    # global test_creature
+    # test_creature = Creature(name, 0, 0)
+    global test_creature
+    test_creature = load_creature()
+    if not test_creature:
+        name = get_user_name()
+        test_creature = Creature(name, 0, 0)
     window, hunger_bar, bathroom_bar, mood_bar = setup_ui()
     window.after(UPDATE_INTERVAL, update_game_loop)
     window.mainloop()
@@ -173,7 +210,7 @@ def update_game_loop():
     # update progress bars
     hunger_bar['value'] = 100 - test_creature.hunger
     bathroom_bar['value'] = 100 - test_creature.bathroom
-    mood_bar['value'] = max(0, test_creature.get_mood_value())
+    mood_bar['value'] = test_creature.happiness
 
     # continue the loop
     hunger_bar.after(UPDATE_INTERVAL, update_game_loop)

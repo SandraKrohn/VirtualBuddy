@@ -15,18 +15,18 @@ class Creature():
         self.name = name
         self.hunger = hunger
         self.bathroom = bathroom
+        self.happiness = MAX_HAPPINESS
     
     def update_needs(self):
         # increase needs over time
         self.hunger = min(MAX_HUNGER, self.hunger + HUNGER_RATE)
         self.bathroom = min(MAX_BLADDER, self.bathroom + BLADDER_RATE)
+        self.happiness = max(0, self.happiness - 1)
     
     def get_mood_value(self):
-        # the lower the needs, the better the mood
         penalties = self.hunger * 0.7 + self.bathroom * 0.7
-        mood_value = MAX_HAPPINESS - penalties
+        mood_value = self.happiness - penalties
         return max(0, min(MAX_HAPPINESS, int(mood_value)))
-
 
     def feed(self):
         self.hunger = max(0, self.hunger - 20)
@@ -34,10 +34,12 @@ class Creature():
     def go_to_bathroom(self):
         self.bathroom = max(0, self.bathroom - 30)
 
-    # might increase happiness
-    # wait, is that necessary?
     def pet(self):
-        return "The blob rumbles softly."
+        increase_amount = 10
+        old_happiness = self.happiness
+        self.happiness = min(MAX_HAPPINESS, self.happiness + increase_amount)
+        print(f'Pet: happiness increased from {old_happiness} to {self.happiness}')
+        return f'{self.name} rumbles softly.'
 
     # and is this necessary?
     def get_mood_string(self):
@@ -45,8 +47,10 @@ class Creature():
         return '^^'
 
     def to_dict(self):
-        return {'name': self.name, 'hunger': self.hunger, 'bathroom': self.bathroom}
+        return {'name': self.name, 'hunger': self.hunger, 'bathroom': self.bathroom, 'happiness': self.happiness}
 
     @classmethod
     def from_dict(cls, data):
-        return cls(name = data['name'], hunger = data['hunger'], bathroom = data['bathroom'])
+        creature = cls(data['name'], data['hunger'], data['bathroom'])
+        creature.happiness = data.get('happiness', MAX_HAPPINESS)
+        return creature
