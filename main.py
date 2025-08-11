@@ -1,5 +1,6 @@
 import math
 import tkinter as tk
+from tkinter import messagebox
 import ttkbootstrap as ttk
 import sys
 import os
@@ -15,6 +16,24 @@ def restart(window):
     window.destroy()  # close the current window
     python = sys.executable
     os.execl(python, python, *sys.argv)  # re-launch the script with same args
+
+# NEW NEW NEW NEW NEW NEW
+def delete_game(window):
+    import os
+    from config import SAVE_FILE
+
+    # also new, but inside this method (only this if block)
+    confirm = messagebox.askyesno('Delete creature', 'Are you sure you want to delete your creature and start over?')
+    if not confirm:
+        return
+
+    if os.path.exists(SAVE_FILE):
+        os.remove(SAVE_FILE)
+        print("Save file deleted. Restarting...")
+    else:
+        print("No save file to delete.")
+    
+    restart(window)
     
 def setup_ui():
     # initialize Tkinter UI components (labels, buttons, etc.)
@@ -133,7 +152,7 @@ def setup_ui():
     button_frame.grid(row=3, column=0, pady=10)
 
     # buttons + giving them all the same size
-    max_chars = max(len('pet'), len('feed'), len('bathroom'))
+    max_chars = max(len('pet'), len('feed'), len('bathroom'), len('delete'))
 
     button_pet = ttk.Button(button_frame, text='pet', command=pet)
     button_pet.configure(width=max_chars)
@@ -146,6 +165,11 @@ def setup_ui():
     button_bathroom = ttk.Button(button_frame, text='bathroom', command=bathroom)
     button_bathroom.configure(width=max_chars)
     button_bathroom.pack(side='left', padx=10)
+
+    # NEW NEW NEW NEW NEW NEW
+    button_delete = ttk.Button(button_frame, text='DELETE', command=lambda: delete_game(window), bootstyle='danger')
+    button_delete.config(width=max_chars)
+    button_delete.pack(side='left', padx=10, pady=5)
 
     return window, hunger_bar, bathroom_bar, mood_bar
 
