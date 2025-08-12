@@ -1,15 +1,5 @@
 from config import HUNGER_RATE, BLADDER_RATE, MAX_HUNGER, MAX_BLADDER, MAX_HAPPINESS
 
-"""
-define all stats
-track mood based on thresholds
-provide methods like:
- - feed(), give_water(), pet(), go_to_bathroom()
- - update_needs() (increases needs over time)
- - get_mood() (returns string or emoji based on current stats)
- - to_dict() / from_dict() for saving / loading
-"""
-
 class Creature():
     def __init__(self, name, hunger, bathroom):
         self.name = name

@@ -17,12 +17,10 @@ def restart(window):
     python = sys.executable
     os.execl(python, python, *sys.argv)  # re-launch the script with same args
 
-# NEW NEW NEW NEW NEW NEW
 def delete_game(window):
     import os
     from config import SAVE_FILE
 
-    # also new, but inside this method (only this if block)
     confirm = messagebox.askyesno('Delete creature', 'Are you sure you want to delete your creature and start over?')
     if not confirm:
         return
@@ -129,9 +127,11 @@ def setup_ui():
     
     def bathroom():
         test_creature.go_to_bathroom()
-        show_message(f'{test_creature.name} went for walkies.\nThey feel much better now (:')
+        show_message(f'{test_creature.name} went walkies.\nThey feel much better now (:')
 
-    # status
+    # status & name
+    ttk.Label(status_frame, text=test_creature.name, font=('Courier', 15, 'bold')).pack(anchor='w', pady=10)
+
     ttk.Label(status_frame, text='Mood:', font=('Courier', 12)).pack(anchor='w')
     mood_bar = ttk.Progressbar(status_frame, maximum=100, length=200)
     mood_bar.pack(anchor='w', pady=(0, 10))
@@ -166,7 +166,6 @@ def setup_ui():
     button_bathroom.configure(width=max_chars)
     button_bathroom.pack(side='left', padx=10)
 
-    # NEW NEW NEW NEW NEW NEW
     button_delete = ttk.Button(button_frame, text='DELETE', command=lambda: delete_game(window), bootstyle='danger')
     button_delete.config(width=max_chars)
     button_delete.pack(side='left', padx=10, pady=5)
@@ -214,16 +213,18 @@ def get_user_name():
     prompt.mainloop()
     return name_var.get()
 
+
 def main():
     global hunger_bar, bathroom_bar, mood_bar
-    # name = get_user_name()
-    # global test_creature
-    # test_creature = Creature(name, 0, 0)
     global test_creature
+
     test_creature = load_creature()
+
     if not test_creature:
         name = get_user_name()
+
         test_creature = Creature(name, 0, 0)
+
     window, hunger_bar, bathroom_bar, mood_bar = setup_ui()
     window.after(UPDATE_INTERVAL, update_game_loop)
     window.mainloop()
