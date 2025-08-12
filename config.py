@@ -19,4 +19,5 @@ BLADDER_RATE = 1
 HAPPINESS_RATE = 1
 
 # saving file path
-SAVE_FILE = 'creature_save.json'
+# NEW NEW NEW NEW NEW NEW (was SAVE_FILE = {'creature_save.json'} before)
+SAVE_FILES = ['save_slot_1.json', 'save_slot_2.json', 'save_slot_3.json']

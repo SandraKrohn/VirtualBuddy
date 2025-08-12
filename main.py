@@ -9,29 +9,37 @@ from creature import Creature
 from config import *
 from save_manager import load_creature, save_creature
 
+# NEW NEW NEW NEW NEW NEW (one line - do I need test_creature = None anymore?)
+selected_save_file = None
 test_creature = None
 
+# NEW NEW NEW NEW NEW NEW (added save_creature() line)
 def restart(window):
     print("Restarting application...")
+    save_creature(test_creature, selected_save_file)
     window.destroy()  # close the current window
     python = sys.executable
     os.execl(python, python, *sys.argv)  # re-launch the script with same args
 
+# NEW NEW NEW NEW NEW NEW (second if block: selected_save_file was SAVE_FILE before)
 def delete_game(window):
     import os
-    from config import SAVE_FILE
+    # NEW NEW NEW NEW NEW NEW: added global variable
+    global selected_save_file
 
     confirm = messagebox.askyesno('Delete creature', 'Are you sure you want to delete your creature and start over?')
     if not confirm:
         return
 
-    if os.path.exists(SAVE_FILE):
-        os.remove(SAVE_FILE)
-        print("Save file deleted. Restarting...")
+    if os.path.exists(selected_save_file):
+        os.remove(selected_save_file)
+        print("Save file deleted.")
     else:
         print("No save file to delete.")
     
-    restart(window)
+    # NEW NEW NEW NEW NEW NEW: removed restart(window), added these two lines instead
+    selected_save_file = None
+    window.destroy()
     
 def setup_ui():
     # initialize Tkinter UI components (labels, buttons, etc.)
@@ -177,8 +185,9 @@ def handle_user_action():
     # respond to user input (button press)
     pass
 
+# NEW NEW NEW NEW NEW NEW (added selected_save_file parameter)
 def on_exit():
-    save_creature(test_creature)
+    save_creature(test_creature, selected_save_file)
     # handle cleanup and saving before exit
     hunger_bar['value'] = max(0, MAX_HUNGER - test_creature.hunger)
     bathroom_bar['value'] = max(0, MAX_BLADDER - test_creature.bathroom)
@@ -216,14 +225,49 @@ def get_user_name():
 
 def main():
     global hunger_bar, bathroom_bar, mood_bar
-    global test_creature
+    # NEW NEW NEW NEW NEW NEW: added selected_save_file
+    global test_creature, selected_save_file
 
-    test_creature = load_creature()
+    # NEW NEW NEW NEW NEW NEW (up to selector.mainloop - all this was test_creature = load_creature() before)
+    selected_save_file = None
+
+    # NEW NEW NEW NEW NEW NEW: global -> was nonlocal before
+    def select_save_slot():
+        global selected_save_file
+
+        def choose_slot(index):
+            global selected_save_file
+            selected_save_file = SAVE_FILES[index]
+            selector.destroy()
+
+        selector = tk.Tk()
+        selector.title('Choose Save Slot')
+        selector.geometry('300x200')
+
+        tk.Label(selector, text='Select a save slot:', font=('Arial', 12)).pack(pady=10)
+
+        for i, save_file in enumerate(SAVE_FILES):
+            if os.path.exists(save_file):
+                try:
+                    creature = load_creature(save_file)
+                    btn_text = creature.name
+                except:
+                    btn_text = "empty"
+            else:
+                btn_text = "empty"
+            
+            tk.Button(selector, text=f"Slot {i+1}: {btn_text}", width=25, command=lambda i=i: choose_slot(i)).pack(pady=5)
+
+        selector.mainloop()
+
+    # NEW NEW NEW NEW NEW NEW (two lines) (and I guess the line save_creature(test_creature, selected_save_file))
+    select_save_slot()
+    test_creature = load_creature(selected_save_file)
 
     if not test_creature:
         name = get_user_name()
-
         test_creature = Creature(name, 0, 0)
+        save_creature(test_creature, selected_save_file)
 
     window, hunger_bar, bathroom_bar, mood_bar = setup_ui()
     window.after(UPDATE_INTERVAL, update_game_loop)

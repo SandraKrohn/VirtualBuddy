@@ -1,26 +1,29 @@
 import json
 import os
-from config import SAVE_FILE
+# NEW NEW NEW NEW NEW NEW: SAVE_FILES instead of singular
+from config import SAVE_FILES
 from creature import Creature
 
-def save_creature(creature):
+# NEW NEW NEW NEW NEW NEW: added save_file as parameter, replaced SAVE_FILE with save_file (with open...),
+# added "to {save_file}" in print
+def save_creature(creature, save_file):
     try:
-        with open(SAVE_FILE, 'w') as file:
+        with open(save_file, 'w') as file:
             json.dump(creature.to_dict(), file)
-        print(f'Saved creature: {creature.name}')
+        print(f'Saved creature: {creature.name} to {save_file}')
     except Exception as e:
         print(f'Error saving creature: {e}')
 
-
-def load_creature():
+# NEW NEW NEW NEW NEW NEW: added save_file as parameter, using it in with open and os.remove, adding it to print
+def load_creature(save_file):
     try:
-        with open(SAVE_FILE, 'r') as f:
+        with open(save_file, 'r') as f:
             content = f.read().strip()
             if not content:
-                os.remove(SAVE_FILE)
+                os.remove(save_file)
                 raise ValueError("Save file was empty and has been deleted.")
             data = json.loads(content)
-        print("Loaded creature data.")
+        print(f"Loaded creature from {save_file}.")
         return Creature.from_dict(data)
     
     except (FileNotFoundError, ValueError) as e:
