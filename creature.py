@@ -31,11 +31,6 @@ class Creature():
         print(f'Pet: happiness increased from {old_happiness} to {self.happiness}')
         return f'{self.name} rumbles softly.'
 
-    # and is this necessary?
-    def get_mood_string(self):
-        # return "authentic" mood later
-        return '^^'
-
     def to_dict(self):
         return {'name': self.name, 'hunger': self.hunger, 'bathroom': self.bathroom, 'happiness': self.happiness}
 

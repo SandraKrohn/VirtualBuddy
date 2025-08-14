@@ -5,26 +5,21 @@ import ttkbootstrap as ttk
 import sys
 import os
 from creature import Creature
-# from save_manager import load_creature, save_creature
 from config import *
 from save_manager import load_creature, save_creature
 
-# NEW NEW NEW NEW NEW NEW (one line - do I need test_creature = None anymore?)
 selected_save_file = None
 test_creature = None
 
-# NEW NEW NEW NEW NEW NEW (added save_creature() line)
-def restart(window):
-    print("Restarting application...")
-    save_creature(test_creature, selected_save_file)
-    window.destroy()  # close the current window
-    python = sys.executable
-    os.execl(python, python, *sys.argv)  # re-launch the script with same args
+# def restart(window):
+#     print("Restarting application...")
+#     save_creature(test_creature, selected_save_file)
+#     window.destroy()  # close the current window
+#     python = sys.executable
+#     os.execl(python, python, *sys.argv)  # re-launch the script with same args
 
-# NEW NEW NEW NEW NEW NEW (second if block: selected_save_file was SAVE_FILE before)
 def delete_game(window):
     import os
-    # NEW NEW NEW NEW NEW NEW: added global variable
     global selected_save_file
 
     confirm = messagebox.askyesno('Delete creature', 'Are you sure you want to delete your creature and start over?')
@@ -37,7 +32,6 @@ def delete_game(window):
     else:
         print("No save file to delete.")
     
-    # NEW NEW NEW NEW NEW NEW: removed restart(window), added these two lines instead
     selected_save_file = None
     window.destroy()
     
@@ -180,12 +174,6 @@ def setup_ui():
 
     return window, hunger_bar, bathroom_bar, mood_bar
 
-# I've already taken care of this tho?
-def handle_user_action():
-    # respond to user input (button press)
-    pass
-
-# NEW NEW NEW NEW NEW NEW (added selected_save_file parameter)
 def on_exit():
     save_creature(test_creature, selected_save_file)
     # handle cleanup and saving before exit
@@ -225,13 +213,10 @@ def get_user_name():
 
 def main():
     global hunger_bar, bathroom_bar, mood_bar
-    # NEW NEW NEW NEW NEW NEW: added selected_save_file
     global test_creature, selected_save_file
 
-    # NEW NEW NEW NEW NEW NEW (up to selector.mainloop - all this was test_creature = load_creature() before)
     selected_save_file = None
 
-    # NEW NEW NEW NEW NEW NEW: global -> was nonlocal before
     def select_save_slot():
         global selected_save_file
 
@@ -260,7 +245,6 @@ def main():
 
         selector.mainloop()
 
-    # NEW NEW NEW NEW NEW NEW (two lines) (and I guess the line save_creature(test_creature, selected_save_file))
     select_save_slot()
     test_creature = load_creature(selected_save_file)
 
