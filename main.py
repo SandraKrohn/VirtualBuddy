@@ -11,12 +11,12 @@ from save_manager import load_creature, save_creature
 selected_save_file = None
 test_creature = None
 
-# def restart(window):
-#     print("Restarting application...")
-#     save_creature(test_creature, selected_save_file)
-#     window.destroy()  # close the current window
-#     python = sys.executable
-#     os.execl(python, python, *sys.argv)  # re-launch the script with same args
+def restart(window):
+    print("Restarting application...")
+    save_creature(test_creature, selected_save_file)
+    window.destroy()  # close the current window
+    python = sys.executable
+    os.execl(python, python, *sys.argv)  # re-launch the script with same args
 
 def delete_game(window):
     import os
